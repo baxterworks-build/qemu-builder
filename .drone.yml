@@ -11,8 +11,7 @@ steps:
   image: voltagex/fedora-mingw64-qemu
   commands:
   - mv drone-helper.sh qemu/ && cd qemu && ./drone-helper.sh
-  - curl -vL -F file=@qemu/output/qemu.tar.gz https://tmp.ninja/api.php?d=upload-tool
-
+  
 #- name: publish  
 #  image: plugins/github-release
 #  settings:

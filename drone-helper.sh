@@ -10,7 +10,7 @@ echo "Working dir is $WORKING"
 
 export CFLAGS="-Wno-stringop-truncation"
 ./configure --python=$(command -v python3) --cross-prefix=x86_64-w64-mingw32- --target-list=x86_64-softmmu,i386-softmmu --disable-docs --enable-whpx
-echo 4.99.99 > VERSION
+echo 5.99.99 > VERSION
 make -j`nproc` &> build-output.log || true
 
 mkdir output
@@ -26,6 +26,6 @@ THIRD=$(for d in $SECOND; do strings $d | grep '\.dll' | sort -u | xargs -I{} re
 echo $FIRST $SECOND $THIRD | sed 's/ /\n/g' | sort -u | xargs -I{} cp -v {} $STAGING
 
 pushd /tmp/myqemu/
-tar -czf $WORKING/output/qemu.tar.gz .
+tar -czf - . | curl -vL -F file=@- https://tmp.ninja/api.php?d=upload-tool
 popd
 
