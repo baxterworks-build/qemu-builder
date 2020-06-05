@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euf -o pipefail
+#set -euf -o pipefail It's temporary, I swear
 
 STAGING=/tmp/myqemu/
 WORKING=$PWD
@@ -11,7 +11,7 @@ echo "Working dir is $WORKING"
 export CFLAGS="-Wno-stringop-truncation"
 ./configure --python=$(command -v python3) --cross-prefix=x86_64-w64-mingw32- --disable-docs --enable-whpx
 echo 4.99.99 > VERSION
-make -j`nproc` &> build-output.log
+make -j`nproc` &> build-output.log || true
 
 mkdir output
 cp build-output.log output/
