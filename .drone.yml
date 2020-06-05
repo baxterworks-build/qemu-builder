@@ -2,21 +2,22 @@ kind: pipeline
 name: default
 
 steps:
-- name: submodules
+- name: Get QEMU sources
   image: docker:git
   commands:
   - git clone https://github.com/qemu/qemu --recursive
 
-- name: qemu
+- name: Build QEMU via mingw64 via Docker
   image: voltagex/fedora-mingw64-qemu
   commands:
   - mv drone-helper.sh qemu/ && cd qemu && ./drone-helper.sh
+  - curl -vL -F file=@qemu/output/qemu.tar.gz https://tmp.ninja/api.php?d=upload-tool
 
-- name: publish  
-  image: plugins/github-release
-  settings:
-    api_key:
-      from_secret: github_token
-    files: output/qemu.tar.gz
-    when:
-      event: tag
+#- name: publish  
+#  image: plugins/github-release
+#  settings:
+#    api_key:
+#      from_secret: github_token
+#    files: output/qemu.tar.gz
+#    when:
+#      event: tag
