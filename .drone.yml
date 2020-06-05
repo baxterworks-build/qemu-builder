@@ -1,0 +1,22 @@
+kind: pipeline
+name: default
+
+steps:
+- name: submodules
+  image: docker:git
+  commands:
+  - git clone https://github.com/qemu/qemu --recursive
+
+- name: qemu
+  image: voltagex/fedora-mingw64-qemu
+  commands:
+  - mv drone-helper.sh qemu/ && cd qemu && ./drone-helper.sh
+
+- name: publish  
+  image: plugins/github-release
+  settings:
+    api_key:
+      from_secret: github_token
+    files: output/qemu.tar.gz
+    when:
+      event: tag
