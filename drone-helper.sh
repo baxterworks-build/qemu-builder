@@ -28,7 +28,7 @@ echo "Working dir is $WORKING"
 
 
 export CFLAGS="-Wno-stringop-truncation"
-./configure --python=$(command -v python3) --cross-prefix=x86_64-w64-mingw32- --target-list=x86_64-softmmu,i386-softmmu --disable-docs --enable-whpx
+./configure --python=$(command -v python3) --cross-prefix=x86_64-w64-mingw32- --disable-docs --enable-whpx
 echo 5.99.99 > VERSION
 JOBS=${JOBS:=$(nproc)} #if we don't pass a JOBS variable in, use the value of nproc 
 echo Number of jobs set to $JOBS!
