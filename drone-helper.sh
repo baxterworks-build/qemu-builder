@@ -28,26 +28,24 @@ echo "Working dir is $WORKING"
 
 
 export CFLAGS="-Wno-stringop-truncation"
-./configure --python=$(command -v python3) --cross-prefix=x86_64-w64-mingw32- --disable-docs --enable-whpx
+./configure --python=$(command -v python3) --target-list=x86_64-softmmu,i386-softmmu --cross-prefix=x86_64-w64-mingw32- --disable-docs --enable-whpx
 echo 5.99.99 > VERSION
 JOBS=${JOBS:=$(nproc)} #if we don't pass a JOBS variable in, use the value of nproc 
 echo Number of jobs set to $JOBS!
 
+echo "building with cmp"
 time make -j$JOBS &> build-output.log
+cat build-output.log | curl -F "sprunge=<-" sprunge.us
+git clean -fdx
 
-mkdir output
-cp build-output.log output/
+mv -v `which cmp` /tmp/cmp.disabled
 
-make install prefix=$STAGING
+./configure --python=$(command -v python3) --target-list=x86_64-softmmu,i386-softmmu --cross-prefix=x86_64-w64-mingw32- --disable-docs --enable-whpx
+echo 5.99.99 > VERSION
+JOBS=${JOBS:=$(nproc)} #if we don't pass a JOBS variable in, use the value of nproc 
+echo Number of jobs set to $JOBS!
 
-#todo: probably better to walk these dependencies in a loop, and not use grep (but seriously, where's the mingw dumpbin)
-#Run the "same" command multiple times to find dependencies of dependencies
-FIRST=$(strings $STAGING/*.exe | grep '\.dll' | sort -u | xargs -I{} readlink -e /usr/x86_64-w64-mingw32/sys-root/mingw/bin/{})
-SECOND=$(for d in $FIRST; do strings $d | grep '\.dll' | sort -u | xargs -I{} readlink -e /usr/x86_64-w64-mingw32/sys-root/mingw/bin/{}; done)
-THIRD=$(for d in $SECOND; do strings $d | grep '\.dll' | sort -u | xargs -I{} readlink -e /usr/x86_64-w64-mingw32/sys-root/mingw/bin/{}; done)
-echo $FIRST $SECOND $THIRD | sed 's/ /\n/g' | sort -u | xargs -I{} cp -v {} $STAGING
-
-pushd /tmp/myqemu/
-tar -czf - . | curl -vL -F file=@- https://tmp.ninja/api.php?d=upload-tool
-popd
+echo "building without cmp"
+time make -j$JOBS &> build-output.log
+cat build-output.log | curl -F "sprunge=<-" sprunge.us
 
