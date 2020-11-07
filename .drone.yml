@@ -1,7 +1,21 @@
+---
 kind: pipeline
 name: default
 
 steps:
+- name: docker  
+  image: plugins/docker
+#  Only rebuild the Fedora/MinGW container when we tag a release
+#  when:
+#    event: tag
+#    branch: master
+  settings:
+    username: voltagex
+    password:
+      from_secret: docker_auth
+    repo: voltagex/fedora-mingw64-qemu
+    dockerfile: Dockerfile.fedora-builder
+
 - name: Get QEMU sources
   image: docker:git
   commands:
@@ -12,11 +26,11 @@ steps:
   commands:
   - mv drone-helper.sh qemu/ && cd qemu && ./drone-helper.sh
   
-#- name: publish  
-#  image: plugins/github-release
-#  settings:
-#    api_key:
-#      from_secret: github_token
-#    files: output/qemu.tar.gz
-#    when:
-#      event: tag
+- name: publish  
+  image: plugins/github-release
+  settings:
+    api_key:
+      from_secret: github_token
+    files: /output/qemu.tar.gz
+    when:
+      event: tag

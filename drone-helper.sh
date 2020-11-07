@@ -60,10 +60,7 @@ THIRD=$(for d in $SECOND; do strings $d | grep '\.dll' | sort -u | xargs -I{} re
 echo $FIRST $SECOND $THIRD | sed 's/ /\n/g' | sort -u | xargs -I{} cp -v {} $STAGING
 
 pushd /tmp/myqemu/
-echo
-echo
-tar -czf - . | curl -vL -F file=@- https://tmp.ninja/api.php?d=upload-tool
-echo
-echo
-popd
+#I am assuming anyone after qemu on Windows also has a way of extracting tar.gz
+tar -czf /output/qemu.tar.gz .
+
 
