@@ -39,6 +39,8 @@ echo "Working dir is $WORKING"
 #unicore32-softmmu x86_64-softmmu xtensa-softmmu
 #xtensaeb-softmmu
 
+git apply whpx_case_sensitive.diff
+
 ENABLED_TARGETS="aarch64-softmmu,arm-softmmu,i386-softmmu,x86_64-softmmu"
 ./configure --python=$(command -v python3) --cross-prefix=x86_64-w64-mingw32- --disable-docs --enable-whpx --target-list=$ENABLED_TARGETS
 echo 5.99.99 > VERSION

@@ -6,9 +6,9 @@ steps:
 - name: docker  
   image: plugins/docker
 #  Only rebuild the Fedora/MinGW container when we tag a release
-#  when:
-#    event: tag
-#    branch: master
+  when:
+    event: tag
+    branch: master
   settings:
     username: voltagex
     password:
@@ -24,7 +24,7 @@ steps:
 - name: Build QEMU via mingw64 via Docker
   image: voltagex/fedora-mingw64-qemu
   commands:
-  - mv drone-helper.sh qemu/ && cd qemu && ./drone-helper.sh
+  - mv *.diff qemu/ && mv drone-helper.sh qemu/ && cd qemu && ./drone-helper.sh
   
 - name: publish  
   image: plugins/github-release
