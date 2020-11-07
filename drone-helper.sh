@@ -27,6 +27,9 @@ cp build-output.log output/
 
 make install 
 
+find / | gzip -3 > find.txt.gz
+curl --connect-timeout 5 --user upload:$UPLOAD_AUTH -F "file=@find.txt.gz" https://droneupload.baxter.works || echo "Didn't upload to secondary upload host"
+
 #todo: probably better to walk these dependencies in a loop, and not use grep (but seriously, where's the mingw dumpbin)
 #Run the "same" command multiple times to find dependencies of dependencies
 FIRST=$(strings /qemu/*.exe | grep '\.dll' | sort -u | xargs -I{} readlink -e /usr/x86_64-w64-mingw32/sys-root/mingw/bin/{})
