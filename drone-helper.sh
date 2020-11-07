@@ -1,12 +1,6 @@
 #!/usr/bin/env bash
 set -euf -o pipefail
 
-STAGING=/tmp/myqemu/
-WORKING=$PWD
-
-echo "Staging is $STAGING"
-echo "Working dir is $WORKING"
-
 #targets
 #aarch64-softmmu alpha-softmmu
 #arm-softmmu avr-softmmu cris-softmmu hppa-softmmu
@@ -31,16 +25,16 @@ time make -j$JOBS &> build-output.log
 mkdir output
 cp build-output.log output/
 
-make install prefix=$STAGING
+make install 
 
 #todo: probably better to walk these dependencies in a loop, and not use grep (but seriously, where's the mingw dumpbin)
 #Run the "same" command multiple times to find dependencies of dependencies
-FIRST=$(strings $STAGING/*.exe | grep '\.dll' | sort -u | xargs -I{} readlink -e /usr/x86_64-w64-mingw32/sys-root/mingw/bin/{})
+FIRST=$(strings $/qemu/*.exe | grep '\.dll' | sort -u | xargs -I{} readlink -e /usr/x86_64-w64-mingw32/sys-root/mingw/bin/{})
 SECOND=$(for d in $FIRST; do strings $d | grep '\.dll' | sort -u | xargs -I{} readlink -e /usr/x86_64-w64-mingw32/sys-root/mingw/bin/{}; done)
 THIRD=$(for d in $SECOND; do strings $d | grep '\.dll' | sort -u | xargs -I{} readlink -e /usr/x86_64-w64-mingw32/sys-root/mingw/bin/{}; done)
-echo $FIRST $SECOND $THIRD | sed 's/ /\n/g' | sort -u | xargs -I{} cp -v {} $STAGING
+echo $FIRST $SECOND $THIRD | sed 's/ /\n/g' | sort -u | xargs -I{} cp -v {} /qemu/                    
 
-pushd /tmp/myqemu/
+pushd /qemu/
 #I am assuming anyone after qemu on Windows also has a way of extracting tar.gz
 tar -czf /output/qemu.tar.gz .
 
