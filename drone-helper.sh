@@ -1,27 +1,8 @@
 #!/usr/bin/env bash
-#set -euf -o pipefail It's temporary, I swear
+set -euf -o pipefail
 
 STAGING=/tmp/myqemu/
 WORKING=$PWD
-
-#https://stackoverflow.com/questions/3601515/how-to-check-if-a-variable-is-set-in-bash
-if [ -z ${DRONE+x} ]; then 
-    echo "Not running in Drone?"
-    #todo: don't assume we're on Fedora
-    echo fastestmirror=1 >> /etc/dnf/dnf.conf
-    dnf -v install --assumeyes git make mingw64-gcc mingw64-binutils binutils findutils flex bison mingw64-pkg-config perl-podlators texinfo  \
-    mingw64-glib2 mingw64-pixman mingw64-SDL2 mingw64-gettext \
-    mingw64-curl mingw64-libpng mingw64-libjpeg-turbo \
-    mingw64-libgcrypt mingw64-gnutls mingw64-bzip2 mingw64-libssh2 mingw64-libxml2 p7zip p7zip-plugins gcc mingw32-nsis mingw32-nsiswrapper bzip2 wget && dnf clean all
-
-    cd /usr/src
-    #Get WHPX headers
-    git clone --depth=1 https://github.com/baxterworks-build/qemu-builder-builder
-    cp qemu-builder-builder/headers/* /usr/x86_64-w64-mingw32/sys-root/mingw/include/
-    time git clone --recursive https://github.com/qemu/qemu/
-    cd qemu
-    WORKING=$PWD
-fi
 
 echo "Staging is $STAGING"
 echo "Working dir is $WORKING"
@@ -38,8 +19,6 @@ echo "Working dir is $WORKING"
 #sparc-softmmu sparc64-softmmu tricore-softmmu
 #unicore32-softmmu x86_64-softmmu xtensa-softmmu
 #xtensaeb-softmmu
-
-git apply whpx_case_sensitive.diff
 
 ENABLED_TARGETS="aarch64-softmmu,arm-softmmu,i386-softmmu,x86_64-softmmu"
 ./configure --python=$(command -v python3) --cross-prefix=x86_64-w64-mingw32- --disable-docs --enable-whpx --target-list=$ENABLED_TARGETS

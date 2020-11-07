@@ -24,7 +24,7 @@ steps:
 - name: Build QEMU via mingw64 via Docker
   image: voltagex/fedora-mingw64-qemu
   commands:
-  - mv *.diff qemu/ && mv drone-helper.sh qemu/ && cd qemu && ./drone-helper.sh
+  - mv drone-helper.sh qemu/ && cd qemu && ./drone-helper.sh
   
 - name: publish  
   image: plugins/github-release
