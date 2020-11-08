@@ -14,7 +14,8 @@ steps:
     ref:
       include: 
         - refs/tags/container-*
-
+      exclude:
+        - refs/tags/**
   settings:
     username: voltagex
     password:
@@ -41,6 +42,8 @@ steps:
     ref:
       include: 
         - refs/tags/release-*
+      exclude:
+        - refs/tags/**
   settings:
     api_key:
       from_secret: github_token
