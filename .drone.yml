@@ -25,11 +25,23 @@ steps:
 
 - name: Get QEMU sources
   image: docker:git
+  trigger:
+    ref:
+      include: 
+        - refs/tags/release-*
+      exclude:
+        - refs/tags/**
   commands:
   - git clone https://github.com/qemu/qemu --recursive
 
 - name: Build QEMU via mingw64 via Docker
   image: voltagex/fedora-mingw64-qemu
+  trigger:
+    ref:
+      include: 
+        - refs/tags/release-*
+      exclude:
+        - refs/tags/**
   environment:
     UPLOAD_AUTH:
       from_secret: upload_auth
