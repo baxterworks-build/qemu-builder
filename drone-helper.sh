@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -euf -o pipefail
 
 #targets
 #aarch64-softmmu alpha-softmmu
