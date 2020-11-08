@@ -20,8 +20,11 @@ echo 5.99.99 > VERSION
 JOBS=${JOBS:=$(nproc)} #if we don't pass a JOBS variable in, use the value of nproc 
 echo Number of jobs set to $JOBS!
 
+mkdir -p /qemu/
 time make -j$JOBS &> /qemu/build-output.log
+echo "make is done"
 make install &> /qemu/install-output.log
+echo "make install is done"
 tar -czf /qemu.tar.gz /qemu
 curl --connect-timeout 5 --user upload:$UPLOAD_AUTH -F "file=@/qemu.tar.gz" https://droneupload.baxter.works || echo "Didn't upload to secondary upload host"
 
