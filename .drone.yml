@@ -8,7 +8,6 @@ steps:
 #  Only rebuild the Fedora/MinGW container when we tag a release
   when:
     event: tag
-    branch: master
   settings:
     username: voltagex
     password:
