@@ -20,15 +20,10 @@ echo 5.99.99 > VERSION
 JOBS=${JOBS:=$(nproc)} #if we don't pass a JOBS variable in, use the value of nproc 
 echo Number of jobs set to $JOBS!
 
-time make -j$JOBS &> build-output.log
-
-mkdir output
-cp build-output.log output/
-
-make install 
-
-find / | gzip -3 > find.txt.gz
-curl --connect-timeout 5 --user upload:$UPLOAD_AUTH -F "file=@find.txt.gz" https://droneupload.baxter.works || echo "Didn't upload to secondary upload host"
+time make -j$JOBS &> /qemu/build-output.log
+make install &> /qemu/install-output.log
+tar -czf /qemu.tar.gz /qemu
+curl --connect-timeout 5 --user upload:$UPLOAD_AUTH -F "file=@/qemu.tar.gz" https://droneupload.baxter.works || echo "Didn't upload to secondary upload host"
 
 #todo: probably better to walk these dependencies in a loop, and not use grep (but seriously, where's the mingw dumpbin)
 #Run the "same" command multiple times to find dependencies of dependencies
@@ -37,8 +32,5 @@ SECOND=$(for d in $FIRST; do strings $d | grep '\.dll' | sort -u | xargs -I{} re
 THIRD=$(for d in $SECOND; do strings $d | grep '\.dll' | sort -u | xargs -I{} readlink -e /usr/x86_64-w64-mingw32/sys-root/mingw/bin/{}; done)
 echo $FIRST $SECOND $THIRD | sed 's/ /\n/g' | sort -u | xargs -I{} cp -v {} /qemu/                    
 
-pushd /qemu/
-#I am assuming anyone after qemu on Windows also has a way of extracting tar.gz
-tar -czf /output/qemu.tar.gz .
 
 
