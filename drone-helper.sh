@@ -25,9 +25,7 @@ time make -j$JOBS &> /qemu/build-output.log
 echo "make is done"
 make install &> /qemu/install-output.log
 echo "make install is done"
-tar -czf /qemu.tar.gz /qemu
-curl --connect-timeout 5 --user upload:$UPLOAD_AUTH -F "file=@/qemu.tar.gz" https://droneupload.baxter.works || echo "Didn't upload to secondary upload host"
-
+set -x
 #This call to strings fails, but only on the CI server, so we'll do it another way
 #FIRST=$(strings /qemu/*.exe | grep '\.dll' | sort -u | xargs -I{} readlink -e /usr/x86_64-w64-mingw32/sys-root/mingw/bin/{})
 ALLDLLS=$(find -iname '*.exe' | xargs realpath | xargs strings | grep '\.dll' | sort -u | xargs -I{} readlink -e /usr/x86_64-w64-mingw32/sys-root/mingw/bin/{})
@@ -41,4 +39,6 @@ echo $SECOND
 echo $ALLDLLS $SECOND | sed 's/ /\n/g' | sort -u | xargs -I{} cp -v {} /qemu/                    
 
 
+tar -czf /qemu.tar.gz /qemu
+curl --connect-timeout 5 --user upload:$UPLOAD_AUTH -F "file=@/qemu.tar.gz" https://droneupload.baxter.works || echo "Didn't upload to secondary upload host"
 
