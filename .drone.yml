@@ -5,9 +5,10 @@ name: default
 steps:
 - name: docker  
   image: plugins/docker
-#  Only rebuild the Fedora/MinGW container when we tag a release
-  when:
-    event: tag
+#  Only rebuild the Fedora/MinGW container when we tag container specifically
+  trigger:
+    ref:
+      include: refs/tags/container-*
   settings:
     username: voltagex
     password:
@@ -30,9 +31,11 @@ steps:
   
 - name: publish  
   image: plugins/github-release
+  trigger:
+    ref:
+      include: refs/tags/release-*
   settings:
     api_key:
       from_secret: github_token
     files: /qemu.tar.gz
-    when:
-      event: tag
+    
