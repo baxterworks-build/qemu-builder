@@ -1,6 +1,10 @@
 ---
 kind: pipeline
 name: default
+trigger:
+  ref:
+    include:
+      - refs/tags/**
 
 steps:
 - name: Create voltagex/fedora-mingw64-qemu image  
