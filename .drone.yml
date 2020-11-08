@@ -33,6 +33,6 @@ steps:
   settings:
     api_key:
       from_secret: github_token
-    files: /output/qemu.tar.gz
+    files: /qemu.tar.gz
     when:
       event: tag
