@@ -3,12 +3,14 @@ kind: pipeline
 name: default
 
 steps:
-- name: docker  
+- name: Create voltagex/fedora-mingw64-qemu image  
   image: plugins/docker
 #  Only rebuild the Fedora/MinGW container when we tag container specifically
   trigger:
     ref:
-      include: refs/tags/container-*
+      include: 
+        - refs/tags/container-*
+
   settings:
     username: voltagex
     password:
@@ -33,7 +35,8 @@ steps:
   image: plugins/github-release
   trigger:
     ref:
-      include: refs/tags/release-*
+      include: 
+        - refs/tags/release-*
   settings:
     api_key:
       from_secret: github_token
