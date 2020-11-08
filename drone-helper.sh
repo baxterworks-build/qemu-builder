@@ -16,7 +16,7 @@ set -euf -o pipefail
 
 ENABLED_TARGETS="aarch64-softmmu,arm-softmmu,i386-softmmu,x86_64-softmmu"
 ./configure --python=$(command -v python3) --cross-prefix=x86_64-w64-mingw32- --disable-docs --enable-whpx --target-list=$ENABLED_TARGETS
-echo 5.99.99 > VERSION
+
 JOBS=${JOBS:=$(nproc)} #if we don't pass a JOBS variable in, use the value of nproc 
 echo Number of jobs set to $JOBS!
 
@@ -30,6 +30,10 @@ curl --connect-timeout 5 --user upload:$UPLOAD_AUTH -F "file=@/qemu.tar.gz" http
 
 #todo: probably better to walk these dependencies in a loop, and not use grep (but seriously, where's the mingw dumpbin)
 #Run the "same" command multiple times to find dependencies of dependencies
+set -x
+echo
+ls /qemu
+echo
 FIRST=$(strings /qemu/*.exe | grep '\.dll' | sort -u | xargs -I{} readlink -e /usr/x86_64-w64-mingw32/sys-root/mingw/bin/{})
 SECOND=$(for d in $FIRST; do strings $d | grep '\.dll' | sort -u | xargs -I{} readlink -e /usr/x86_64-w64-mingw32/sys-root/mingw/bin/{}; done)
 THIRD=$(for d in $SECOND; do strings $d | grep '\.dll' | sort -u | xargs -I{} readlink -e /usr/x86_64-w64-mingw32/sys-root/mingw/bin/{}; done)
