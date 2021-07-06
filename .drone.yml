@@ -9,7 +9,8 @@ when:
 steps:
 - name: Create voltagex/fedora-mingw64-qemu image  
   image: plugins/docker
-#  Only rebuild the Fedora/MinGW container when we tag container specifically
+# Only rebuild the Fedora/MinGW container when we tag container specifically
+# e.g. git tag container-0.2 && git push origin --tags
   when:
     ref:
       include: 
@@ -26,6 +27,8 @@ steps:
 - name: Get QEMU sources
   image: docker:git
   when:
+# Only build and release qemu when we tag a release
+# e.g. git tag release-0.2 && git push origin --tags
     ref:
       include: 
         - refs/tags/release-*

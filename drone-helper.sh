@@ -16,7 +16,7 @@
 ENABLED_TARGETS="aarch64-softmmu,arm-softmmu,i386-softmmu,x86_64-softmmu"
 ./configure --python=$(command -v python3) --cross-prefix=x86_64-w64-mingw32- --disable-docs --enable-whpx --target-list=$ENABLED_TARGETS
 
-JOBS=${JOBS:=$(nproc)} #if we don't pass a JOBS variable in, use the value of nproc 
+JOBS=${JOBS:=$(nproc)} #if we don't pass a JOBS variable in, use the value of nproc
 echo Number of jobs set to $JOBS!
 
 mkdir -p /qemu/
@@ -35,9 +35,6 @@ echo $ALLDLLS
 echo
 echo $SECOND
 
-echo $ALLDLLS $SECOND | sed 's/ /\n/g' | sort -u | xargs -I{} cp -v {} /qemu/                    
-
+echo $ALLDLLS $SECOND | sed 's/ /\n/g' | sort -u | xargs -I{} cp -v {} /qemu/
 
 tar -czf /qemu.tar.gz /qemu
-curl --connect-timeout 5 --user upload:$UPLOAD_AUTH -F "file=@/qemu.tar.gz" https://droneupload.baxter.works || echo "Didn't upload to secondary upload host"
-
