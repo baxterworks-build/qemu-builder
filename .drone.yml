@@ -15,8 +15,6 @@ steps:
     ref:
       include: 
         - refs/tags/container-*
-      exclude:
-        - refs/tags/**
   settings:
     username: voltagex
     password:
@@ -30,10 +28,7 @@ steps:
 # Only build and release qemu when we tag a release
 # e.g. git tag release-0.2 && git push origin --tags
     ref:
-      include: 
-        - refs/tags/release-*
-      exclude:
-        - refs/tags/**
+      - refs/tags/release-*
   commands:
   - git clone https://github.com/qemu/qemu --recursive
 
@@ -41,10 +36,7 @@ steps:
   image: voltagex/fedora-mingw64-qemu
   when:
     ref:
-      include: 
-        - refs/tags/release-*
-      exclude:
-        - refs/tags/**
+      - refs/tags/release-*
   environment:
     UPLOAD_AUTH:
       from_secret: upload_auth
