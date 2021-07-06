@@ -6,7 +6,7 @@ mingw64-curl mingw64-libpng mingw64-libjpeg-turbo \
 mingw64-libgcrypt mingw64-gnutls mingw64-bzip2 mingw64-libssh2 mingw64-libxml2 p7zip p7zip-plugins gcc mingw32-nsis mingw32-nsiswrapper bzip2 wget python-setuptools ninja-build git-core && dnf clean all
 
 #WHPX / Hyper-V headers from MinGW64
-RUN curl --connect-timeout=5 -L https://downloads.sourceforge.net/project/mingw-w64/mingw-w64/mingw-w64-release/mingw-w64-v9.0.0.tar.bz2 | tar -jxf -
+RUN curl --connect-timeout 5 -L https://downloads.sourceforge.net/project/mingw-w64/mingw-w64/mingw-w64-release/mingw-w64-v9.0.0.tar.bz2 | tar -jxf -
 RUN cp -v mingw-w64-v9.0.0/mingw-w64-headers/include/winhv* /usr/x86_64-w64-mingw32/sys-root/mingw/include/
 #qemu expects the headers to have the same casing as the Windows SDK ones
 RUN cd /usr/x86_64-w64-mingw32/sys-root/mingw/include/ && mv winhvplatform.h WinHvPlatform.h && mv winhvemulation.h WinHvEmulation.h
