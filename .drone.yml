@@ -52,5 +52,5 @@ steps:
   settings:
     api_key:
       from_secret: github_token
-    files: /qemu.tar.gz
+    files: /output/*.tar.gz
     
