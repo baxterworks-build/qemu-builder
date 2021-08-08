@@ -1,10 +1,9 @@
 ---
 kind: pipeline
 name: container
-when:
+trigger:
   ref:
-    include: 
-      - refs/tags/container-*
+  - refs/tags/container-*
 
 steps:
   - name: Create voltagex/fedora-mingw64-qemu image  
@@ -21,10 +20,9 @@ steps:
 ---
 kind: pipeline
 name: qemu
-when:
+trigger:
   ref:
-    include: 
-      - refs/tags/release-*
+  - refs/tags/release-*
 
 steps:
   - name: Get QEMU sources
