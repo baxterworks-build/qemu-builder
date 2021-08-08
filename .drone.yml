@@ -49,8 +49,6 @@ steps:
     ref:
       include: 
         - refs/tags/release-*
-      exclude:
-        - refs/tags/**
   settings:
     api_key:
       from_secret: github_token
