@@ -46,8 +46,7 @@ steps:
         from_secret: github_token
       files: /output/*.7z
 
-  - name: publish-b2  
-    b2:
+  - name: publish-b2
       image: techknowlogick/drone-b2
       bucket: baxterworks-drone
       secrets: [ b2_account_id, b2_application_key ]
