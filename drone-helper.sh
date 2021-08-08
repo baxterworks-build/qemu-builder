@@ -38,5 +38,5 @@ SECOND=$(for d in $ALLDLLS; do strings $d | grep '\.dll' | sort -u | xargs -I{} 
 echo $ALLDLLS $SECOND | sed 's/ /\n/g' | sort -u | xargs -I{} cp -v {} /qemu/
 
 mkdir /output/
-tar -czf /output/qemu.tar.gz /qemu
+7z -t7z -m9 -mmt=on a /output/qemu.7z /qemu
 ls -lah /output

@@ -45,6 +45,7 @@ steps:
   
 - name: publish  
   image: plugins/github-release
+  failure: ignore
   when:
     ref:
       include: 
@@ -52,5 +53,12 @@ steps:
   settings:
     api_key:
       from_secret: github_token
-    files: /output/*.tar.gz
+    files: /output/*.7z
     
+pipeline:
+  b2:
+    image: techknowlogick/drone-b2
+    bucket: baxterworks-drone
+    secrets: [ b2_account_id, b2_application_key ]
+    source: /output/*.7z
+    target: /qemu
