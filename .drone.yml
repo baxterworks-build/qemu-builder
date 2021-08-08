@@ -8,7 +8,6 @@ trigger:
 steps:
   - name: Create voltagex/fedora-mingw64-qemu image  
     image: plugins/docker
-
     settings:
       username: voltagex
       password:
@@ -47,7 +46,8 @@ steps:
       files: /output/*.7z
 
   - name: publish-b2
-      image: techknowlogick/drone-b2
+    image: techknowlogick/drone-b2
+    b2:
       bucket: baxterworks-drone
       secrets: [ b2_account_id, b2_application_key ]
       source: /output/*.7z
