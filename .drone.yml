@@ -1,22 +1,21 @@
 ---
 kind: pipeline
 name: container
-# Only rebuild the Fedora/MinGW container when we tag container specifically
-# e.g. git tag container-0.2 && git push origin --tags
 when:
   ref:
     include: 
       - refs/tags/container-*
-steps:
-- name: Create voltagex/fedora-mingw64-qemu image  
-  image: plugins/docker
 
-  settings:
-    username: voltagex
-    password:
-      from_secret: docker_auth
-    repo: voltagex/fedora-mingw64-qemu
-    dockerfile: Dockerfile.fedora-builder
+steps:
+  - name: Create voltagex/fedora-mingw64-qemu image  
+    image: plugins/docker
+
+    settings:
+      username: voltagex
+      password:
+        from_secret: docker_auth
+      repo: voltagex/fedora-mingw64-qemu
+      dockerfile: Dockerfile.fedora-builder
 
 
 ---
@@ -27,39 +26,39 @@ when:
     include: 
       - refs/tags/release-*
 
-- name: Get QEMU sources
-  image: docker:git
-  when:
+steps:
+  - name: Get QEMU sources
+    image: docker:git
+    commands:
+    - git clone https://github.com/qemu/qemu --recursive
+
+  - name: Build QEMU via mingw64 via Docker
+    image: voltagex/fedora-mingw64-qemu
+    environment:
+      UPLOAD_AUTH:
+        from_secret: upload_auth
+    commands:
+    - mv drone-helper.sh qemu/ && cd qemu && ./drone-helper.sh
+    
+  - name: publish-github  
+    image: plugins/github-release
+    failure: ignore
+    settings:
+      api_key:
+        from_secret: github_token
+      files: /output/*.7z
+
+  - name: publish-b2  
+    b2:
+      image: techknowlogick/drone-b2
+      bucket: baxterworks-drone
+      secrets: [ b2_account_id, b2_application_key ]
+      source: /output/*.7z
+      target: /qemu
+
+
+# Only rebuild the Fedora/MinGW container when we tag container specifically
+# e.g. git tag container-0.2 && git push origin --tags
+
 # Only build and release qemu when we tag a release
 # e.g. git tag release-0.2 && git push origin --tags
-    ref:
-      - refs/tags/release-*
-  commands:
-  - git clone https://github.com/qemu/qemu --recursive
-
-- name: Build QEMU via mingw64 via Docker
-  image: voltagex/fedora-mingw64-qemu
-  when:
-    ref:
-      - refs/tags/release-*
-  environment:
-    UPLOAD_AUTH:
-      from_secret: upload_auth
-  commands:
-  - mv drone-helper.sh qemu/ && cd qemu && ./drone-helper.sh
-  
-- name: publish-github  
-  image: plugins/github-release
-  failure: ignore
-  settings:
-    api_key:
-      from_secret: github_token
-    files: /output/*.7z
-
-- name: publish-b2  
-  b2:
-    image: techknowlogick/drone-b2
-    bucket: baxterworks-drone
-    secrets: [ b2_account_id, b2_application_key ]
-    source: /output/*.7z
-    target: /qemu
