@@ -1,26 +1,31 @@
 ---
 kind: pipeline
-name: default
+name: container
+# Only rebuild the Fedora/MinGW container when we tag container specifically
+# e.g. git tag container-0.2 && git push origin --tags
 when:
   ref:
-    include:
-      - refs/tags/**
-
+    include: 
+      - refs/tags/container-*
 steps:
 - name: Create voltagex/fedora-mingw64-qemu image  
   image: plugins/docker
-# Only rebuild the Fedora/MinGW container when we tag container specifically
-# e.g. git tag container-0.2 && git push origin --tags
-  when:
-    ref:
-      include: 
-        - refs/tags/container-*
+
   settings:
     username: voltagex
     password:
       from_secret: docker_auth
     repo: voltagex/fedora-mingw64-qemu
     dockerfile: Dockerfile.fedora-builder
+
+
+---
+kind: pipeline
+name: qemu
+when:
+  ref:
+    include: 
+      - refs/tags/release-*
 
 - name: Get QEMU sources
   image: docker:git
@@ -43,19 +48,15 @@ steps:
   commands:
   - mv drone-helper.sh qemu/ && cd qemu && ./drone-helper.sh
   
-- name: publish  
+- name: publish-github  
   image: plugins/github-release
   failure: ignore
-  when:
-    ref:
-      include: 
-        - refs/tags/release-*
   settings:
     api_key:
       from_secret: github_token
     files: /output/*.7z
-    
-pipeline:
+
+- name: publish-b2  
   b2:
     image: techknowlogick/drone-b2
     bucket: baxterworks-drone
