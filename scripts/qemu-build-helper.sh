@@ -22,7 +22,7 @@ function handle_error {
 ENABLED_TARGETS="aarch64-softmmu,arm-softmmu,i386-softmmu,x86_64-softmmu"
 #( ./configure --python=$(command -v python3) --cross-prefix=x86_64-w64-mingw32- --disable-docs --enable-whpx --enable-slirp --target-list=$ENABLED_TARGETS | tee qemu-configure.log ) || handle_error
 #( strace -f ./configure --python=$(command -v python3) --cross-prefix=x86_64-w64-mingw32- --disable-docs --enable-whpx --enable-slirp --target-list=$ENABLED_TARGETS &> strace.log ) || handle_error
-./configure --python=$(command -v python3) --cross-prefix=x86_64-w64-mingw32- --disable-docs --enable-whpx --enable-slirp --target-list=$ENABLED_TARGETS --bindir=/qemu --disable-werror | tee qemu-configure.log || handle_error
+./configure --python=$(command -v python3) --cross-prefix=x86_64-w64-mingw32- --disable-docs --enable-whpx --enable-slirp --target-list=$ENABLED_TARGETS --bindir=/qemu | tee qemu-configure.log || handle_error
 #./configure --python=$(command -v python3) --cross-prefix=x86_64-w64-mingw32- --disable-docs --enable-whpx --enable-slirp --target-list=$ENABLED_TARGETS --help
 
 

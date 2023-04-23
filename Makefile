@@ -1,5 +1,5 @@
 SHELL=bash
-.PHONY: debug container push all local-build
+.PHONY: debug container push all local-build clean
 
 
 local-build:
@@ -16,4 +16,8 @@ push:
 	docker push $USER/fedora-mingw64-qemu
 #	docker push $USER/fedora-mingw64-qemu:debug
 
+clean:
+	rm -vr built/
+
 all: container push
+

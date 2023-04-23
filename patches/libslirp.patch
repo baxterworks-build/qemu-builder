@@ -1,0 +1,33 @@
+From 226160716636962ad84a64c1a03bbc9889759331 Mon Sep 17 00:00:00 2001
+From: Samuel Thibault <samuel.thibault@ens-lyon.org>
+Date: Sun, 23 Apr 2023 10:47:35 +0200
+Subject: [PATCH] Use SSIZE_T from BaseTsd.h on windows
+
+It is defined by BaseTsd.h as LONG_PTR, which is 32bit size on win32, and
+64bit size on win64.
+
+It seems that mingw rather uses int for the 32bit case, but better stick
+to the MS definition, and int/LONG_PTR will be abi-compatible on 32bit.
+
+Fixes #68
+---
+ src/libslirp.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/libslirp.h b/src/libslirp.h
+index 63a9600..7860808 100644
+--- a/src/libslirp.h
++++ b/src/libslirp.h
+@@ -10,7 +10,8 @@
+ #include <winsock2.h>
+ #include <ws2tcpip.h>
+ #include <in6addr.h>
+-typedef int slirp_ssize_t;
++#include <basetsd.h>
++typedef SSIZE_T slirp_ssize_t;
+ #ifdef BUILDING_LIBSLIRP
+ # define SLIRP_EXPORT __declspec(dllexport)
+ #else
+-- 
+GitLab
+
