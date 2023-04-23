@@ -1,0 +1,15 @@
+diff --git a/block/file-win32.c b/block/file-win32.c
+index ec9d64d0e4..bc7772ffdd 100644
+--- a/block/file-win32.c
++++ b/block/file-win32.c
+@@ -255,7 +255,9 @@ static void raw_probe_alignment(BlockDriverState *bs, Error **errp)
+                          &dg.Geometry.BytesPerSector,
+                          &freeClusters, &totalClusters);
+         bs->bl.request_alignment = dg.Geometry.BytesPerSector;
+-        return;
++        if (bs->bl.request_alignment) {
++            return;
++        }
+     }
+ 
+     /* XXX Does Windows support AIO on less than 512-byte alignment? */

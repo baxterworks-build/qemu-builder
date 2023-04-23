@@ -1,12 +1,33 @@
-FROM fedora:34
+FROM fedora:latest as builder
 RUN echo fastestmirror=1 >> /etc/dnf/dnf.conf
-RUN dnf -v install --assumeyes make mingw64-gcc mingw64-binutils binutils diffutils findutils flex bison mingw64-pkg-config perl-podlators texinfo  \
-mingw64-glib2 mingw64-pixman mingw64-SDL2 mingw64-gettext \
-mingw64-curl mingw64-libpng mingw64-libjpeg-turbo \
-mingw64-libgcrypt mingw64-gnutls mingw64-bzip2 mingw64-libssh2 mingw64-libxml2 p7zip p7zip-plugins gcc mingw32-nsis mingw32-nsiswrapper bzip2 wget python-setuptools ninja-build git-core && dnf clean all
+RUN echo keepcache=1 >> /etc/dnf/dnf.conf
+RUN --mount=type=cache,target=/var/cache \ 
+	dnf -v install --assumeyes strace make mingw64-gcc mingw64-binutils binutils diffutils findutils flex bison mingw64-pkg-config perl-podlators texinfo  \
+	mingw64-glib2 mingw64-pixman mingw64-SDL2 mingw64-gettext \
+	mingw64-curl mingw64-libpng mingw64-libjpeg-turbo \
+	mingw64-libgcrypt mingw64-gnutls mingw64-bzip2 mingw64-libssh2 mingw64-libxml2 p7zip p7zip-plugins gcc mingw32-nsis mingw32-nsiswrapper bzip2 wget python-setuptools ninja-build git-core meson && dnf clean all
 
 #WHPX / Hyper-V headers from MinGW64
 RUN curl --connect-timeout 5 -L https://downloads.sourceforge.net/project/mingw-w64/mingw-w64/mingw-w64-release/mingw-w64-v9.0.0.tar.bz2 | tar -jxf -
 RUN cp -v mingw-w64-v9.0.0/mingw-w64-headers/include/winhv* /usr/x86_64-w64-mingw32/sys-root/mingw/include/ && rm -r mingw-w64-v9.0.0
 #qemu expects the headers to have the same casing as the Windows SDK ones
 RUN cd /usr/x86_64-w64-mingw32/sys-root/mingw/include/ && mv winhvplatform.h WinHvPlatform.h && mv winhvemulation.h WinHvEmulation.h
+
+FROM builder as qemu-source
+COPY --from=builder / /
+#RUN --mount=type=cache,target=/usr/src/qemu ls /usr/src/qemu/.git || git clone --recursive --jobs=16 https://github.com/qemu/qemu /usr/src/qemu || true 
+
+#GitHub mirror doesn't seem to be keeping up with GitLab
+#RUN git clone --recursive --jobs=16 https://github.com/qemu/qemu /usr/src/qemu
+RUN git clone --recursive --jobs=16 https://gitlab.com/qemu-project/qemu.git /usr/src/qemu
+WORKDIR /usr/src/qemu
+RUN meson subprojects download
+
+FROM qemu-source as qemu-builder
+COPY --from=qemu-source / /
+COPY ./scripts/*.sh .
+RUN bash qemu-build-helper.sh || true
+RUN bash qemu-bundle-helper.sh || true
+
+FROM scratch
+COPY --from=qemu-builder /qemu.tar.gz /
