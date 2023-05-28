@@ -1,23 +1,23 @@
 SHELL=bash
+OUTPUT=1
+
+ifeq ($(OUTPUT),1)
+	DOCKER_OUTPUT=--output=built/
+else
+	DOCKER_OUTPUT=
+endif
+
+
+
 .PHONY: debug container push all local-build clean
 
 
-local-build:
-	BUILDKIT_PROGRESS=plain DOCKER_BUILDKIT=1 docker build . -f Dockerfile.fedora-builder --output=built/
+configure:
+	BUILDKIT_PROGRESS=plain DOCKER_BUILDKIT=1 docker build . -f Dockerfile.fedora-builder --target=qemu-configure
 
-#debug:
-#	docker build -f Dockerfile-debug -t $USER/fedora-mingw64-qemu:debug .
-#	docker run --cap-add SYS_PTRACE -it $USER/fedora-mingw64-qemu:debug
+build:
+	BUILDKIT_PROGRESS=plain DOCKER_BUILDKIT=1 docker build . -f Dockerfile.fedora-builder $(DOCKER_OUTPUT)
 
-container:
-	BUILDKIT_PROGRESS=plain DOCKER_BUILDKIT=1 docker build -f Dockerfile.fedora-builder -t $USER/fedora-mingw64-qemu .
-
-push:
-	docker push $USER/fedora-mingw64-qemu
-#	docker push $USER/fedora-mingw64-qemu:debug
-
-clean:
-	rm -vr built/
-
-all: container push
+build-android:
+	BUILDKIT_PROGRESS=plain DOCKER_BUILDKIT=1 docker build . -f Dockerfile.android $(DOCKER_OUTPUT)
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash -x
 
 #targets
 #aarch64-softmmu alpha-softmmu
@@ -19,14 +19,15 @@ function handle_error {
 	find . -name "*.log" | xargs -i cp -vr {} /qemu/
 }
 
-ENABLED_TARGETS="aarch64-softmmu,arm-softmmu,i386-softmmu,x86_64-softmmu"
-#( ./configure --python=$(command -v python3) --cross-prefix=x86_64-w64-mingw32- --disable-docs --enable-whpx --enable-slirp --target-list=$ENABLED_TARGETS | tee qemu-configure.log ) || handle_error
-#( strace -f ./configure --python=$(command -v python3) --cross-prefix=x86_64-w64-mingw32- --disable-docs --enable-whpx --enable-slirp --target-list=$ENABLED_TARGETS &> strace.log ) || handle_error
-./configure --python=$(command -v python3) --cross-prefix=x86_64-w64-mingw32- --disable-docs --enable-whpx --enable-slirp --target-list=$ENABLED_TARGETS --bindir=/qemu | tee qemu-configure.log || handle_error
-#./configure --python=$(command -v python3) --cross-prefix=x86_64-w64-mingw32- --disable-docs --enable-whpx --enable-slirp --target-list=$ENABLED_TARGETS --help
+ENABLED_TARGETS="aarch64-softmmu,arm-softmmu,i386-softmmu,x86_64-softmmu,ppc-softmmu"
+./configure --python=$(command -v python3) --cross-prefix=x86_64-w64-mingw32- --disable-docs --enable-whpx --target-list=$ENABLED_TARGETS --bindir=/qemu --enable-slirp --enable-vhdx --enable-zstd --enable-libusb --enable-avx2 | tee qemu-configure.log || handle_error
 
-
-
+# --enable-spice --enable-spice-protocol - there's no mingw64 spice-server?
+# --enable-libssh
+# git://git.libssh.org/projects/libssh.git
+# https://lists.gnu.org/archive/html/qemu-devel/2019-06/msg02758.html
+# no mingw64 version of cyrus-sasl-devel?
+#18 4.601 ../meson.build:1566:2: ERROR: C header 'sasl/sasl.h' not found
 
 JOBS=${JOBS:=$(nproc)} #if we don't pass a JOBS variable in, use the value of nproc
 echo Number of jobs set to $JOBS!
